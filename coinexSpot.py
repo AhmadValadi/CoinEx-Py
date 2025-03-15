@@ -127,7 +127,38 @@ class CoinExClient(object):
         
         body = json.dumps(data, sort_keys=True)
         return self._request("POST", request_path, data=body)
+    def place_stop_order(self, market, side, amount, stop_price, order_type, price=None, trigger_type="gt", client_id=None, is_hide=False):
+        """
+        Place a stop order via POST /spot/stop-order.
+        
+        Parameters:
+          market       : e.g., "BTCUSDT"
+          side         : "buy" or "sell"
+          amount       : order quantity
+          stop_price   : price at which the stop order is triggered
+          order_type   : type of stop order, e.g., "stop-limit" or "stop-market"
+          price        : limit price for stop-limit orders (optional)
+          trigger_type : condition for triggering, "gt" (greater than) or "lt" (less than); defaults to "gt"
+          client_id    : optional client identifier
+          is_hide      : whether the order should be hidden (default False)
+        """
+        request_path = "/spot/stop-order"
+        data = {
+            "market": market,
+            "side": side,
+            "amount": str(amount),
+            "stop_price": str(stop_price),
+            "type": order_type,
+            "trigger_type": trigger_type,
+            "is_hide": is_hide
+        }
+        if price is not None:
+            data["price"] = str(price)
+        if client_id is not None:
+            data["client_id"] = client_id
 
+        body = json.dumps(data, sort_keys=True)
+        return self._request("POST", request_path, data=body)
     def cancel_order(self, market, order_id):
         request_path = "/spot/cancel-order"
         data = {"market": market, "order_id": order_id}
